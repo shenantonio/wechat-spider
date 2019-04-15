@@ -70,24 +70,30 @@ class SeleniumDownloaderBackend(object):
     def get_browser(self, proxy):
         """ 启动并返回浏览器，使用firefox """
         # 启动浏览器
-        firefox_profile = webdriver.FirefoxProfile()
-        # 禁止加载image
-        #firefox_profile.set_preference('permissions.default.stylesheet', 2)
-        #firefox_profile.set_preference('permissions.default.image', 2)
-        #firefox_profile.set_preference('dom.ipc.plugins.enabled.libflashplayer.so', 'false')
-        # 代理
-        if proxy.is_valid():
-            myProxy = '%s:%s' % (proxy.host, proxy.port)
-            ff_proxy = Proxy({
-                'proxyType': ProxyType.MANUAL,
-                'httpProxy': myProxy,
-                'ftpProxy': myProxy,
-                'sslProxy': myProxy,
-                'noProxy': ''})
+        # firefox_profile = webdriver.FirefoxProfile()
+        # # 禁止加载image
+        # #firefox_profile.set_preference('permissions.default.stylesheet', 2)
+        # #firefox_profile.set_preference('permissions.default.image', 2)
+        # #firefox_profile.set_preference('dom.ipc.plugins.enabled.libflashplayer.so', 'false')
+        # # 代理
+        # if proxy.is_valid():
+        #     myProxy = '%s:%s' % (proxy.host, proxy.port)
+        #     ff_proxy = Proxy({
+        #         'proxyType': ProxyType.MANUAL,
+        #         'httpProxy': myProxy,
+        #         'ftpProxy': myProxy,
+        #         'sslProxy': myProxy,
+        #         'noProxy': ''})
+        #
+        #     browser = webdriver.Firefox(firefox_profile=firefox_profile, proxy=ff_proxy)
+        # else:
+        #     browser = webdriver.Firefox(firefox_profile=firefox_profile)
 
-            browser = webdriver.Firefox(firefox_profile=firefox_profile, proxy=ff_proxy)
-        else:
-            browser = webdriver.Firefox(firefox_profile=firefox_profile)
+        fp = webdriver.FirefoxProfile()
+        fp.set_preference("network.proxy.type", 0)
+        fp.set_preference("general.useragent.override","Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 Safari/7046A194A")
+        fp.update_preferences()
+        browser = webdriver.Firefox(firefox_profile=fp)
 
         return browser
 
@@ -138,7 +144,16 @@ class SeleniumDownloaderBackend(object):
                       var dataSrc = imgs[i].getAttribute('data-src');
                       if (dataSrc){
                         imgs[i].setAttribute('src', dataSrc);
+                        imgs[i].removeAttribute('crossorigin');
                       }
+                    }
+                    var ele = document.getElementById('js_pc_qr_code');
+                    if(ele){
+                        ele.remove();
+                    }
+                    var ele2 = document.getElementById('js_profile_qrcode');
+                    if(ele2){
+                        ele2.remove();
                     }
                     return document.documentElement.innerHTML;
                 """
@@ -161,25 +176,25 @@ class SeleniumDownloaderBackend(object):
         """ 访问微信首页，输入微信id，点击搜公众号 """
         browser = self.browser
         browser.get("http://weixin.sogou.com/")
-        print browser.title
+        logger.info(browser.title)
         element_querybox = browser.find_element_by_name('query')
         element_querybox.send_keys(wechatid, Keys.ARROW_DOWN)
         element_search_btn = browser.find_element_by_xpath("//input[@value='搜公众号']")
         element_search_btn.click()
         time.sleep(3)
-        print browser.title
+        logger.info(browser.title)
 
     def visit_wechat_index_keyword(self, word):
         """ 访问微信首页，输入关键词，点击搜文章 """
         browser = self.browser
         browser.get("http://weixin.sogou.com/")
-        print browser.title
+        logger.info(browser.title)
         element_querybox = browser.find_element_by_name('query')
         element_querybox.send_keys(word, Keys.ARROW_DOWN)
         element_search_btn = browser.find_element_by_xpath("//input[@value='搜文章']")
         element_search_btn.click()
         time.sleep(3)
-        print browser.title
+        logger.info(browser.title)
 
     def visit_wechat_topic_list(self, wechatid):
         """ 找到微信号，并点击进入微信号的文章列表页面 """
@@ -216,7 +231,7 @@ class SeleniumDownloaderBackend(object):
         links = []
         for idx, item in enumerate(elems[:10]):
             title = item
-            print title
+            logger.info(title)
             if not title:
                 continue
             uniqueid = get_uniqueid('%s:%s' % (wechat_id, title))
@@ -244,7 +259,16 @@ class SeleniumDownloaderBackend(object):
                       var dataSrc = imgs[i].getAttribute('data-src');
                       if (dataSrc){
                         imgs[i].setAttribute('src', dataSrc);
+                        imgs[i].removeAttribute('crossorigin');
                       }
+                    }
+                    var ele = document.getElementById('js_pc_qr_code');
+                    if(ele){
+                        ele.remove();
+                    }
+                    var ele2 = document.getElementById('js_profile_qrcode');
+                    if(ele2){
+                        ele2.remove();
                     }
                     return document.documentElement.innerHTML;
                 """
@@ -278,7 +302,7 @@ class SeleniumDownloaderBackend(object):
         links = []
         for idx, item in enumerate(elems):
             title = item
-            print title
+            logger.info(title)
             if not title:
                 continue
             uniqueid = get_uniqueid('%s:%s' % (word, title))
@@ -286,7 +310,7 @@ class SeleniumDownloaderBackend(object):
                 Topic.objects.get(uniqueid=uniqueid)
             except Topic.DoesNotExist:
                 #print len(elems), len(hrefs), len(avatars), len(abstracts)
-                print elems, hrefs, avatars, abstracts
+                #print elems, hrefs, avatars, abstracts
                 links.append((title, hrefs[idx], avatars[idx], abstracts[idx]))
                 logger.debug('文章不存在, title=%s, uniqueid=%s' % (title, uniqueid))
         for title, link, avatar, abstract in reversed(links):
@@ -306,7 +330,16 @@ class SeleniumDownloaderBackend(object):
                       var dataSrc = imgs[i].getAttribute('data-src');
                       if (dataSrc){
                         imgs[i].setAttribute('src', dataSrc);
+                        imgs[i].removeAttribute('crossorigin');
                       }
+                    }
+                    var ele = document.getElementById('js_pc_qr_code');
+                    if(ele){
+                        ele.remove();
+                    }
+                    var ele2 = document.getElementById('js_profile_qrcode');
+                    if(ele2){
+                        ele2.remove();
                     }
                     return document.documentElement.innerHTML;
                 """

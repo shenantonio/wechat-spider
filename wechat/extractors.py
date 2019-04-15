@@ -13,6 +13,8 @@ from lxml import etree
 from io import StringIO
 from django.conf import settings
 import logging
+import base64
+
 logger = logging.getLogger()
 
 
@@ -24,7 +26,7 @@ def get_bucket():
     global BUCKET
     if not BUCKET:
         auth = oss2.Auth(OSS2_CONF['ACCESS_KEY_ID'], OSS2_CONF['ACCESS_KEY_SECRET'])
-        BUCKET = oss2.Bucket(auth, 'http://%s' % OSS2_CONF['BUCKET_DOMAIN'], OSS2_CONF['BUCKET_NAME'])
+        BUCKET = oss2.Bucket(auth, 'http://%s' % OSS2_CONF['ENDPOINT'], OSS2_CONF['BUCKET_NAME'])
 
     return BUCKET
 
@@ -32,8 +34,11 @@ def get_bucket():
 def download_to_oss(url, path):
     # 如果没有开启oss，直接返回原url
     if not settings.OSS2_ENABLE:
+        # 判断是否使用图片服务下载模式，如果配置则进行url调整
+        return download_to_imagserver(url)
+    tf = re.match('((http|https)\:\/\/)[a-zA-Z0-9\.\/\?\:@\-_=#]+\.([a-zA-Z]){2,6}([a-zA-Z0-9\.\&\/\?\:@\-_=#])*',url)
+    if not tf:
         return url
-
     r = requests.get(url)
     r.close()
     key = path + md5(r.content).hexdigest()
@@ -46,6 +51,15 @@ def download_to_oss(url, path):
 
     return 'http://%s/%s' % (OSS2_CONF["CDN_DOMAIN"], key)
 
+def download_to_imagserver(url):
+    if settings.IMAGE_SERVER_URL:
+        try:
+            base64Url = base64.urlsafe_b64encode(url)
+            return '%s%s/' % (settings.IMAGE_SERVER_URL, base64Url)
+        except Exception as e:
+            logger.error('url[%s]' % (url), e)
+            return url
+    return url
 
 class BaseExtractor(object):
     __metaclass__ = ABCMeta
@@ -62,10 +76,13 @@ class BaseExtractor(object):
 def replace_all(content, srcs, new_srcs):
     """ 将content中的srcs全部替换成new_srcs
     """
-    replaces = zip(srcs, new_srcs)
-    for src, new_src in replaces:
-        content = content.replace(src.split('?')[0], new_src)
-    return content
+    try:
+        replaces = zip(srcs, new_srcs)
+        for src, new_src in replaces:
+            content = content.replace(src.split('?')[0], new_src)
+        return content
+    except Exception as e:
+        logger.error(e)
 
 
 class ImageExtractor(BaseExtractor):

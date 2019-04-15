@@ -5,9 +5,9 @@ lxml==3.4.4
 hiredis==0.2.0
 redis==2.10.3
 oss2==2.0.5
-selenium==2.52.0
+selenium==3.141.0
 PyVirtualDisplay==0.1.5
 python-dateutil==2.5.0
 beautifulsoup4==4.4.1
-
-
+ConcurrentLogHandler==0.9.1
+kafka-python==1.4.6

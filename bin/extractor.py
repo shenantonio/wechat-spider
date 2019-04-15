@@ -4,7 +4,7 @@ __author__ = 'yijingping'
 import sys
 import os
 reload(sys)
-sys.setdefaultencoding('utf8') 
+sys.setdefaultencoding('utf8')
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'wechatspider.settings'
 import django
@@ -376,7 +376,7 @@ class Extractor(object):
 
         for item in rules:
             col = item["key"]
-            print col
+            logger.debug(col)
             col_rules = item["rules"]
             col_value = self.extract(content, col_rules, {'data': result})
             result[col] = col_value

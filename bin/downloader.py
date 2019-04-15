@@ -57,11 +57,11 @@ class Downloader(object):
                 logger.debug(data)
                 is_limited, proxy = self.check_limit_speed()
                 if is_limited:
-                    print '# 被限制, 放回去, 下次下载'
+                    logger.info('# 被限制, 放回去, 下次下载')
                     time.sleep(1)  # 休息一秒, 延迟放回去的时间
                     r.lpush(CRAWLER_CONFIG["downloader"], resp_data[1])
                 else:
-                    print '# 未被限制,可以下载'
+                    logger.info('# 未被限制,可以下载')
                     # 处理文章的函数,用于回调. 每下载一篇, 处理一篇
                     def process_topic(topic):
                         if topic.get('kind', None) == KIND_DETAIL:

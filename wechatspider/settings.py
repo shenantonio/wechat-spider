@@ -15,8 +15,10 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+import cloghandler
+import sys
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
@@ -140,6 +142,13 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
         },
+        'public': {
+            'class': 'cloghandler.ConcurrentRotatingFileHandler',
+            'filename': os.path.join(BASE_DIR,  'logs/public.log'),
+            'maxBytes': 1024*1024*5,
+            'backupCount': 5,
+            'formatter': 'simple'
+        }
     },
     'loggers': {
         'django': {
@@ -147,7 +156,7 @@ LOGGING = {
             'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
         },
         '': {
-            'handlers': ['console'],
+            'handlers': ['public'],
             'level': 'DEBUG',
         },
     },
@@ -185,6 +194,18 @@ OSS2_CONFIG = {
     "VIDEOS_PATH": "videos/",
     "CDN_DOMAIN": "pystats.bowenpay.com"
 }
+
+# image server url,support download images
+IMAGE_SERVER_URL = 'http://localhost:8001/wechat/image/download/'
+
+# Apache Kafka
+KAFKA_ENABLE = True
+KAFKA_CONFIG = {
+    "bootstrap_servers": "localhost:9092",
+    "topic": "wechat_topic",
+    "client_id": "wechatspider"
+}
+
 LOGIN_URL = '/admin/login/'
 ## Import local settings
 try:

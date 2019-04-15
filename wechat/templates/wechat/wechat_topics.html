@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load paginator %}
+{% load wechat_util %}
 {% block main-content %}
 <div class="row">
   <div class="col-md-12">
@@ -33,9 +34,13 @@
             <th>标题</th>
             <th>原文链接</th>
             <th>时间</th>
+            {% comment %}
             <th>阅读数</th>
             <th>点赞数</th>
+            {% endcomment %}
             <th>字数</th>
+            <th>是否发布</th>
+            <th>操作</th>
           </tr>
         </thead>
         <tbody>
@@ -46,9 +51,27 @@
               <td><a target="_blank" href="{% url 'wechat.topic_detail' item.id %}">{{ item.title}}</a></td>
               <td><a target="_blank" href="{{ item.url }}">{{ item.url | truncatechars:40 }}</a></td>
               <td>{{ item.publish_time}}</td>
+              {% comment %}
               <td>{{ item.read_num }}</td>
               <td>{{ item.like_num }}</td>
+              {% endcomment %}
               <td>{{ item.words }}</td>
+              <td>
+                {% ifequal item.available '已发布' %}
+                    <font color="green" >已发布</font>
+                {% else %}
+                    <font color="red" >未发布</font>
+                {% endifequal %}
+              </td>
+              <td>
+                <button type="button" id = “id_available” name="发布" onclick="chooseAvailable({{ item.id }}, '已发布')">
+                {% ifequal item.available '已发布' %}
+                    再次发布
+                {% else %}
+                    发布
+                {% endifequal %}
+                </button>
+              </td>
             </tr>
         {% endfor %}
         </tbody>
@@ -58,4 +81,13 @@
 
   </div>
 </div>
+<script>
+    var chooseAvailable = function(topic_id, choose_str){
+        $.post('/wechat/topic/'+topic_id+'/edit/', {'available': choose_str}, function(data){
+            if(data.ret==0){
+                console.log(data.msg);
+            }
+        });
+    }
+</script>
 {% endblock %}

@@ -7,7 +7,7 @@ from io import StringIO
 from lxml import etree
 from datetime import datetime
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse,HttpResponseNotFound
 from django.contrib import messages
 from django.shortcuts import render_to_response, get_object_or_404, redirect, HttpResponseRedirect
 from django.template import RequestContext
@@ -19,6 +19,9 @@ from wechatspider.util import get_redis, login_required
 from .forms import WechatForm, WechatConfigForm
 from .models import Wechat, Topic, Proxy, Word
 from .extractors import download_to_oss
+from kafkaTopic import public_topic
+
+import base64
 
 CRAWLER_CONFIG = settings.CRAWLER_CONFIG
 
@@ -225,6 +228,8 @@ def topic_edit(request, id_):
         available = request.POST.get('available')
         topic.available = available
         topic.save()
+        # 发布kafka消息
+        public_topic(id_)
         return JsonResponse({
             'ret': 0,
             'msg': available
@@ -388,6 +393,14 @@ def api_topic_add(request):
             'message': '提交失败,url必须以 http://mp.weixin.qq.com/ 开头'
         })
 
+def image_server(request, id_):
+    if id_:
+        plainUrl = base64.urlsafe_b64decode(id_.encode('utf-8'))
+        r = requests.get(plainUrl)
+        r.close()
+        image_data = r.content
+        return HttpResponse(image_data, content_type="image/png")
+    return HttpResponseNotFound('<h1>Page not found</h1>')
 
 @csrf_exempt
 def api_add(request):

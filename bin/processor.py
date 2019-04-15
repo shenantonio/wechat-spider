@@ -5,7 +5,7 @@ __author__ = 'yijingping'
 import sys
 import os
 reload(sys)
-sys.setdefaultencoding('utf8') 
+sys.setdefaultencoding('utf8')
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'wechatspider.settings'
 import django
@@ -47,10 +47,13 @@ class Processor():
                 print e
                 continue
 
-            data = json.loads(rsp[1])
-            logger.info(json.dumps(data, encoding="UTF-8", ensure_ascii=False))
-            self.process(data)
-
+            try:
+                data = json.loads(rsp[1])
+                logger.info(json.dumps(data, encoding="UTF-8", ensure_ascii=False))
+                self.process(data)
+            except Exception as e:
+                print e
+                continue
 
 if __name__ == '__main__':
     processor = Processor()
