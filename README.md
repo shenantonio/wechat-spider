@@ -1,6 +1,6 @@
 # 微信爬虫
 爬取微信公众号文章的爬虫
-基于https://github.com/bowenpay/wechat-spider.git的开源进行改造，再次非常感谢！
+基于https://github.com/bowenpay/wechat-spider.git的开源进行改造，非常感谢！
 
 # 功能介绍
 
