@@ -264,7 +264,8 @@ def search_wechat(query):
     p = Proxy.objects.filter(kind=Proxy.KIND_SEARCH, status=Proxy.STATUS_SUCCESS).order_by('?').first()
     if p:
         proxies = {
-            'https': 'http://%s:%s' % (p.host, p.port)
+            'https': 'http://%s:%s' % (p.host, p.port),
+            'http': 'http://%s:%s' % (p.host, p.port),
         }
     else:
         proxies = {}
