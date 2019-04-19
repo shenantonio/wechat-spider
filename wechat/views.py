@@ -264,18 +264,27 @@ def search_wechat(query):
     p = Proxy.objects.filter(kind=Proxy.KIND_SEARCH, status=Proxy.STATUS_SUCCESS).order_by('?').first()
     if p:
         proxies = {
-            'http': 'http://%s:%s' % (p.host, p.port)
+            'https': 'http://%s:%s' % (p.host, p.port)
         }
     else:
         proxies = {}
-    print proxies
+    logging.getLogger().info(proxies)
     headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.118 Safari/537.36'
+            'Host': 'weixin.sogou.com',
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:66.0) Gecko/20100101 Firefox/66.0',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+            'Pragma': 'no-cache'
     }
-    rsp = requests.get("http://weixin.sogou.com/weixin",
+    rsp = requests.get("https://weixin.sogou.com/weixin",
+                       verify=False,
                        params={"type": 1, "query": query},
                        proxies=proxies, headers=headers
     )
+    logging.getLogger().info(rsp.request.headers)
     rsp.close()
     rsp.encoding = rsp.apparent_encoding
     #print rsp.content

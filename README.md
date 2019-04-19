@@ -27,6 +27,7 @@
 
 如果是centos 6.x，升级python2.6到python2.7，参考教程 https://cloud.tencent.com/developer/article/1140994
 
+
 如果是centos 7.x，默认就是python2.7,不用升级
 
 如果是mac osx，可以使用virtualenv，安装python2.7
@@ -54,6 +55,18 @@ clone代码,安装依赖python库
 $ git clone https://github.com/shenantonio/wechat-spider.git
 $ cd wechat-spider
 $ pip install -r requirements.txt
+如果install出现问题，建议执行：
+python -m pip install --upgrade --force pip
+
+wget https://bootstrap.pypa.io/ez_setup.py
+sudo python ez_setup.py install
+
+如出现
+Collecting Django==1.8.1 (from -r requirements.txt (line 1))
+/usr/local/lib/python2.7/site-packages/pip/_vendor/urllib3/util/ssl_.py:354: SNIMissingWarning: An HTTPS request has been made, but the SNI (Server Name Indication) extension to TLS is not available on this platform. This may cause the server to present an incorrect TLS certificate, which can cause validation failures. You can upgrade to a newer version of Python to solve this. For more information, see https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  SNIMissingWarning
+
+pip install pyopenssl ndg-httpsclient pyasn1
 ```
 
 3) 创建mysql数据库
@@ -134,12 +147,20 @@ KAFKA_CONFIG = {
 6) 初始化表
 ```
 $ python manage.py migrate
+
+
 ```
+
 
 7）启动网站
 
 ```
 python manage.py runserver 0.0.0.0:8001
+
+如出现：
+"Can't initialize character set utf8mb4 (path: /usr/share/mysql/charsets/)")
+
+修改/usr/share/mysql/charsets/Index.xml 把 <charset name="utf8"> 修改为 <charset name="utf8mb4">
 ```
 访问 http://localhost:8001/。
 
