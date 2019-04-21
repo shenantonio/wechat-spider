@@ -181,3 +181,24 @@ $ python bin/processor.py
 ```
 
 以上步骤执行成功，并能爬取文章后。可以参考以下部分配置生产环境。
+
+```
+Message: 'geckodriver' executable needs to be in PATH.
+
+Traceback (most recent call last):
+  File "bin/downloader.py", line 96, in <module>
+    downloader.run()
+  File "bin/downloader.py", line 77, in run
+    with SeleniumDownloaderBackend(proxy=proxy) as browser:
+  File "/home/wechat/wechat-spider/wechat/downloaders.py", line 42, in __enter__
+    self.browser = self.get_browser(self.proxy)
+  File "/home/wechat/wechat-spider/wechat/downloaders.py", line 96, in get_browser
+    browser = webdriver.Firefox(firefox_profile=fp)
+  File "/usr/local/lib/python2.7/site-packages/selenium/webdriver/firefox/webdriver.py", line 164, in __init__
+    self.service.start()
+  File "/usr/local/lib/python2.7/site-packages/selenium/webdriver/common/service.py", line 83, in start
+    os.path.basename(self.path), self.start_error_message)
+selenium.common.exceptions.WebDriverException: Message: 'geckodriver' executable needs to be in PATH.
+
+geckodriver 安装
+```

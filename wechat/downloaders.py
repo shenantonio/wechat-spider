@@ -203,6 +203,8 @@ class SeleniumDownloaderBackend(object):
         element_wechat = browser.find_element_by_xpath("//div[@class='txt-box']/p[@class='info']/label")
         element_wechat_title = browser.find_element_by_xpath("//div[@class='txt-box']/p[@class='tit']/a")
         if element_wechat and element_wechat.text == wechatid:
+            logger.info('antonio-206[%s]' % (element_wechat.text))
+            logger.info('antonio-207[%s]' % (element_wechat_title))
             element_wechat_title.click()
             time.sleep(3)
             # 切到当前的文章列表页窗口
