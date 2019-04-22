@@ -69,32 +69,23 @@ class SeleniumDownloaderBackend(object):
 
     def get_browser(self, proxy):
         """ 启动并返回浏览器，使用firefox """
-        # 启动浏览器
-        # firefox_profile = webdriver.FirefoxProfile()
-        # # 禁止加载image
-        # #firefox_profile.set_preference('permissions.default.stylesheet', 2)
-        # #firefox_profile.set_preference('permissions.default.image', 2)
-        # #firefox_profile.set_preference('dom.ipc.plugins.enabled.libflashplayer.so', 'false')
-        # # 代理
-        # if proxy.is_valid():
-        #     myProxy = '%s:%s' % (proxy.host, proxy.port)
-        #     ff_proxy = Proxy({
-        #         'proxyType': ProxyType.MANUAL,
-        #         'httpProxy': myProxy,
-        #         'ftpProxy': myProxy,
-        #         'sslProxy': myProxy,
-        #         'noProxy': ''})
-        #
-        #     browser = webdriver.Firefox(firefox_profile=firefox_profile, proxy=ff_proxy)
-        # else:
-        #     browser = webdriver.Firefox(firefox_profile=firefox_profile)
-
         fp = webdriver.FirefoxProfile()
-        fp.set_preference("network.proxy.type", 0)
+        #禁止加载image
+        #fp.set_preference('permissions.default.stylesheet', 2)
+        fp.set_preference('permissions.default.image', 2)
+        fp.set_preference('dom.ipc.plugins.enabled.libflashplayer.so', 'false')
         fp.set_preference("general.useragent.override","Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 Safari/7046A194A")
+        if proxy.is_valid():
+            logger.info('antonio-97[%s:%s]' % (proxy.host, proxy.port))
+            fp.set_preference('network.proxy.type', 1)
+            fp.set_preference('network.proxy.http', proxy.host)
+            fp.set_preference('network.proxy.http_port', proxy.port)
+            fp.set_preference('network.proxy.ssl', proxy.host)
+            fp.set_preference('network.proxy.ssl_port', proxy.port)
+        else:
+            fp.set_preference("network.proxy.type", 0)
         fp.update_preferences()
         browser = webdriver.Firefox(firefox_profile=fp)
-
         return browser
 
     def download(self, url):
@@ -176,6 +167,15 @@ class SeleniumDownloaderBackend(object):
         """ 访问微信首页，输入微信id，点击搜公众号 """
         browser = self.browser
         browser.get("http://weixin.sogou.com/")
+        time.sleep(3)
+        # 增加Cookie信息
+        logger.info('antonio add cookie')
+        browser.add_cookie({'name': 'ABTEST', 'value': '4|1555894615|v1'})
+        browser.add_cookie({'name': 'IPLOC', 'value': 'CN3100'})
+        browser.add_cookie({'name': 'SUID', 'value': '5AE9E4744018960A000000005CBD1157'})
+        browser.add_cookie({'name': 'weixinIndexVisited', 'value': '1'})
+        browser.add_cookie({'name': 'SUV', 'value': '00A39A3B74E4E95A5CBD11597C9EF458'})
+        browser.add_cookie({'name': 'SNUID', 'value': '368589186D68EB7F9F331B386D002CE9'})
         logger.info(browser.title)
         element_querybox = browser.find_element_by_name('query')
         element_querybox.send_keys(wechatid, Keys.ARROW_DOWN)
