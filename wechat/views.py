@@ -278,7 +278,8 @@ def search_wechat(query):
             'Accept-Encoding': 'gzip, deflate, br',
             'Connection': 'keep-alive',
             'Upgrade-Insecure-Requests': '1',
-            'Pragma': 'no-cache'
+            'Pragma': 'no-cache',
+            'Cookie': 'ABTEST=4|1555894615|v1; IPLOC=CN3100; SUID=5AE9E4744018960A000000005CBD1157; SUID=5AE9E4743118960A000000005CBD1158; weixinIndexVisited=1; SUV=00A39A3B74E4E95A5CBD11597C9EF458; PHPSESSID=apk7vcs76c545vpubeubuqri13; SNUID=368589186D68EB7F9F331B386D002CE9; seccodeRight=success; successCount=1|Mon, 22 Apr 2019 01:02:20 GMT; JSESSIONID=aaaEheK3SdtHD43Whg1Ow'
     }
     rsp = requests.get("https://weixin.sogou.com/weixin",
                        verify=False,
