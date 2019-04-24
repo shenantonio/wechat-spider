@@ -208,7 +208,7 @@ class SeleniumDownloaderBackend(object):
             # 切到当前的文章列表页窗口
             new_handler = browser.window_handles[-1]
             browser.switch_to.window(new_handler)
-            time.sleep(3)
+            time.sleep(30)
             return True
         else:
             return False
