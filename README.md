@@ -183,6 +183,24 @@ $ python bin/processor.py
 以上步骤执行成功，并能爬取文章后。可以参考以下部分配置生产环境。
 
 ```
+
+如果服务器没有安装桌面系统，将出现如下错误，请安装geckodriver
+
+Traceback (most recent call last):
+  File "bin/downloader.py", line 96, in <module>
+    downloader.run()
+  File "bin/downloader.py", line 77, in run
+    with SeleniumDownloaderBackend(proxy=proxy) as browser:
+  File "/home/wechat/wechat-spider/wechat/downloaders.py", line 42, in __enter__
+    self.browser = self.get_browser(self.proxy)
+  File "/home/wechat/wechat-spider/wechat/downloaders.py", line 96, in get_browser
+    browser = webdriver.Firefox(firefox_profile=fp)
+  File "/usr/local/lib/python2.7/site-packages/selenium/webdriver/firefox/webdriver.py", line 164, in __init__
+    self.service.start()
+  File "/usr/local/lib/python2.7/site-packages/selenium/webdriver/common/service.py", line 83, in start
+    os.path.basename(self.path), self.start_error_message)
+selenium.common.exceptions.WebDriverException: Message: 'geckodriver' executable needs to be in PATH.
+
 Message: 'geckodriver' executable needs to be in PATH.
 
 Traceback (most recent call last):
@@ -200,5 +218,187 @@ Traceback (most recent call last):
     os.path.basename(self.path), self.start_error_message)
 selenium.common.exceptions.WebDriverException: Message: 'geckodriver' executable needs to be in PATH.
 
+
 geckodriver 安装
+请选用此版本：https://github.com/mozilla/geckodriver/releases/tag/v0.24.0
+
+https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
+tar xvfz geckodriver-v0.24.0-linux64.tar.gz
+cp geckodriver /usr/local/bin/.
+ln -s /usr/local/geckodriver /usr/bin/geckodriver
+```
+
+
+
+### supervisor的安装，可灵活管理进程
+
+> 安装supervisor
+>
+```
+pip install supervisor==3.4.0
+```
+
+> 测试安装是否成功
+
+```
+echo_supervisord_conf
+
+; Sample supervisor config file.
+;
+; For more information on the config file, please see:
+; http://supervisord.org/configuration.html
+;
+; Notes:
+;  - Shell expansion ("~" or "$HOME") is not supported.  Environment
+;    variables can be expanded using this syntax: "%(ENV_HOME)s".
+;  - Quotes around values are not supported, except in the case of
+;    the environment= options as shown below.
+;  - Comments must have a leading space: "a=b ;comment" not "a=b;comment".
+;  - Command will be truncated if it looks like a config file comment, e.g.
+;    "command=bash -c 'foo ; bar'" will truncate to "command=bash -c 'foo ".
+```
+
+> 建立文件夹,把应用的配置文件单独放置
+```
+mkdir -p /opt/app/supervisor
+mkdir -p /opt/app/supervisor/conf.d
+
+```
+
+> 创建默认的配置文件,并修改配置
+```
+echo_supervisord_conf >/opt/app/supervisor/supervisord.conf
+
+vi /etc/supervisord.conf
+
+[inet_http_server] ; inet (TCP) server disabled by default
+port=0.0.0.0:9001 ; (ip_address:port specifier, *:port for all iface)
+username=user ; (default is no username (open server))
+password=123 ; (default is no password (open server))
+
+[include]
+files = ./conf.d/*.conf
+```
+
+> 设定supervisor启动文件
+
+```
+vi /etc/init.d/supervisord
+
+#! /usr/bin/env bash
+# chkconfig: - 85 15
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin
+
+PROGNAME=supervisord
+
+DAEMON=/usr/local/bin/$PROGNAME
+
+CONFIG=/opt/app/supervisor/$PROGNAME.conf
+
+PIDFILE=/tmp/$PROGNAME.pid
+
+DESC="supervisord daemon"
+
+SCRIPTNAME=/etc/init.d/$PROGNAME
+
+# Gracefully exit if the package has been removed.
+
+test -x $DAEMON || exit 0
+
+
+start()
+
+{
+
+echo -n "Starting $DESC: $PROGNAME"
+
+$DAEMON -c $CONFIG
+
+echo ".............start success"
+
+}
+
+stop()
+
+{
+
+echo "Stopping $DESC: $PROGNAME"
+
+if [ -f "$PIDFILE" ];
+then
+supervisor_pid=$(cat $PIDFILE)
+kill -15 $supervisor_pid
+echo "......"
+echo "stop success"
+else
+echo "$DESC: $PROGNAME is not Runing"
+echo ".........................stop sucess"
+fi
+}
+
+status()
+
+{ statusport=`netstat -lntp|grep 9001|awk -F ' ' '{print $4}'|awk -F ':' '{print $2}'`
+
+if [ -f "$PIDFILE" ];
+then
+supervisor_pid=$(cat $PIDFILE)
+echo "$DESC: $PROGNAME is Runing pid=$supervisor_pid"
+else
+echo "$DESC: $PROGNAME is not Runing"
+echo "please use command /etc/init.d/supervisord start Run the service"
+fi
+}
+
+case "$1" in
+
+start)
+
+start
+
+;;
+
+stop)
+
+stop
+
+;;
+
+restart)
+
+stop
+
+start
+
+;;
+
+status)
+
+status
+
+;;
+
+*)
+
+echo "Usage: $SCRIPTNAME {start|stop|restart}" >&2
+
+exit 1
+
+;;
+
+esac
+
+exit 0
+
+```
+
+
+> 放入配置文件
+
+```
+cp supervisord.conf /opt/app/supervisor/conf.d/.
+
+
+
 ```
