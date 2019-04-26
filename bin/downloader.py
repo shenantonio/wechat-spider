@@ -48,7 +48,7 @@ class Downloader(object):
             try:
                 resp_data = r.brpop(settings.CRAWLER_CONFIG["downloader"])
             except Exception as e:
-                print e
+                logger.exception('获取redis消息数据出现错误')
                 continue
 
             try:
@@ -87,8 +87,9 @@ class Downloader(object):
 
                     time.sleep(randint(1, 5))
             except Exception as e:
-                print e
-                raise
+                logger.exception('下载文章出现异常信息')
+                continue
+                #raise
 
 
 if __name__ == '__main__':
