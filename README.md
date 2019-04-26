@@ -1,6 +1,8 @@
 # 微信爬虫
 爬取微信公众号文章的爬虫
-基于https://github.com/bowenpay/wechat-spider.git的开源进行改造，非常感谢！
+基于
+https://github.com/bowenpay/wechat-spider.git
+的开源进行改造，非常感谢！
 
 # 功能介绍
 
@@ -8,6 +10,7 @@
 # 界面预览
 
 1） 要爬取的微信公众号列表
+
 
 2） 要爬取的文章关键字列表
 
@@ -397,8 +400,57 @@ exit 0
 > 放入配置文件
 
 ```
-cp supervisord.conf /opt/app/supervisor/conf.d/.
+cp /home/wechat/wechat-spider/supervisord.conf /opt/app/supervisor/conf.d/.
+```
+> 启动并观察进程
 
+```
+
+# 启动supervisord
+
+supervisord
+
+# 观察进程情况
+
+ps -fe|grep python
+
+root      8659     1  0 14:47 ?        00:00:00 /usr/local/bin/python /usr/local/bin/supervisord
+wechat    8660  8659  0 14:47 ?        00:00:00 python /home/wechat/wechat-spider/manage.py runserver 0.0.0.0:8001
+wechat    8661  8659  1 14:47 ?        00:00:00 python /home/wechat/wechat-spider/bin/downloader.py
+wechat    8662  8659  1 14:47 ?        00:00:00 python /home/wechat/wechat-spider/bin/downloader.py
+wechat    8663  8659  0 14:47 ?        00:00:00 python /home/wechat/wechat-spider/bin/processor.py
+wechat    8664  8659  1 14:47 ?        00:00:00 python /home/wechat/wechat-spider/bin/extractor.py
+wechat    8665  8659  1 14:47 ?        00:00:00 python /home/wechat/wechat-spider/bin/extractor.py
+wechat    8666  8659  0 14:47 ?        00:00:00 python /home/wechat/wechat-spider/bin/scheduler.py
+wechat    8699  8660  1 14:47 ?        00:00:00 /usr/local/bin/python /home/wechat/wechat-spider/manage.py runserver 0.0.0.0:8001
+
+
+```
+
+> 进程单个管理
+
+```
+# 启动全部程序
+supervisorctl
+# 停止全部程序
+supervisorctl stop all
+# 启动/停止/重启 单个进程
+supervisorctl -u 用户名 -p 密码 start|stop|restart 程序名
+
+程序名清单:
+wechatspider    爬虫管理平台
+wechatspider_scheduler   调度进程
+wechatspider_downloader  下载进程
+wechatspider_extractor   渲染处理进程
+wechatspider_processor   数据落地进程
+
+例如：supervisorctl -u admin -p admin123 start  wechatspider
+
+```
+
+> 通过web界面管理
+
+```
 
 
 ```

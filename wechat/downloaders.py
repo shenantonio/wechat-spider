@@ -23,6 +23,8 @@ logger = logging.getLogger()
 
 CRAWLER_CONFIG = settings.CRAWLER_CONFIG
 
+BASE_DIR = settings.BASE_DIR
+
 
 class SeleniumDownloaderBackend(object):
     headers = [
@@ -85,7 +87,7 @@ class SeleniumDownloaderBackend(object):
         else:
             fp.set_preference("network.proxy.type", 0)
         fp.update_preferences()
-        browser = webdriver.Firefox(firefox_profile=fp)
+        browser = webdriver.Firefox(firefox_profile=fp, service_log_path='%s/%s' % (BASE_DIR, 'geckodriver.log') )
         return browser
 
     def download(self, url):
