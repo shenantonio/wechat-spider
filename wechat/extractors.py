@@ -183,7 +183,7 @@ class WechatContentExtractor(BaseExtractor):
         try:
             # 去掉图片蒙版
             res = res.replace('var occupyImg = ', '')
-            bs=BeautifulSoup(res)
+            bs=BeautifulSoup(res, 'html5lib')
             # 去掉投票的iframe
             vote = bs.find('span', {'class':'vote_area'})
             if vote:

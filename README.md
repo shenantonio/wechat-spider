@@ -401,6 +401,8 @@ exit 0
 
 ```
 cp /home/wechat/wechat-spider/supervisord.conf /opt/app/supervisor/conf.d/.
+
+
 ```
 > 启动并观察进程
 
@@ -409,6 +411,8 @@ cp /home/wechat/wechat-spider/supervisord.conf /opt/app/supervisor/conf.d/.
 # 启动supervisord
 
 supervisord
+
+supervisord -c /opt/app/supervisor/supervisord.conf
 
 # 观察进程情况
 
@@ -431,9 +435,9 @@ wechat    8699  8660  1 14:47 ?        00:00:00 /usr/local/bin/python /home/wech
 
 ```
 # 启动全部程序
-supervisorctl
+supervisorctl -u 用户名 -p 密码 start all
 # 停止全部程序
-supervisorctl stop all
+supervisorctl -u 用户名 -p 密码 stop all
 # 启动/停止/重启 单个进程
 supervisorctl -u 用户名 -p 密码 start|stop|restart 程序名
 
