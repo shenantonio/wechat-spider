@@ -8,14 +8,14 @@ https://github.com/bowenpay/wechat-spider.git
 
 ## 系统架构
 
-![](docs/images/design.png?raw=true)
+![](docs/images/design.png?raw=true)
 
 
 # 界面预览
 
-1） 展示公众号列表
+1） 展示公众号列表
 
-![](docs/images/topic-home.png?raw=true)
+![](docs/images/topic-home.png?raw=true)
 
 2） 要爬取的文章关键字列表
 
