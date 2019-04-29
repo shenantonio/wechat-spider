@@ -6,13 +6,20 @@ https://github.com/bowenpay/wechat-spider.git
 
 # 功能介绍
 
+## 系统架构
+
+![](docs/images/design.png?raw=true)
+
 
 # 界面预览
 
-1） 要爬取的微信公众号列表
+1） 展示公众号列表
 
+![](docs/images/topic-home.png?raw=true)
 
 2） 要爬取的文章关键字列表
+
+2） 要爬取的热点文章关键字列表
 
 3） 已经爬取的微信文章
 
