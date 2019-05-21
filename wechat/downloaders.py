@@ -55,6 +55,7 @@ class SeleniumDownloaderBackend(object):
         # 关闭界面
         try:
             # 关闭浏览器,关闭窗口
+            #self.display and self.display.sendstop()
             self.display and self.display.stop()
         except Exception as e:
             logging.exception(e)

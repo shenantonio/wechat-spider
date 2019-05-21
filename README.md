@@ -1,8 +1,5 @@
 # 微信爬虫
-爬取微信公众号文章的爬虫
-基于
-https://github.com/bowenpay/wechat-spider.git
-的开源进行改造，非常感谢！
+爬取微信公众号文章的爬虫，此版本基于bowenpay的[wechat-spider](https://github.com/bowenpay/wechat-spider.git)的开源进行改造，再此表示**感谢！**
 
 # 功能介绍
 
@@ -10,25 +7,62 @@ https://github.com/bowenpay/wechat-spider.git
 
 ![](docs/images/design.png?raw=true)
 
+基于python2.7，框架使用Django，划分为
+* manage.py 管理平台
+* scheduler.py 调度任务
+* downloader.py 下载任务
+* extractor.py 渲染及html处理
+* processor.py 数据入库处理
+
+1）内部通过redis进行消息驱动，进行任务流程处理，其中downloader.py和extractor.py可启动多个，加快下载和处理速度，PS：频率太高会被反爬虫封IP地址。
+2）文章发布使用kafka消息中间件，订阅者可自行订阅文章内容，详细内容将在api接口部分内说明。
+
+> 中间件说明：
+- 数据库：mysql（ version >= 5.1 ，建议版本 5.7.x )
+- 缓存服务（消息）：redis ( version >= 2.6 建议版本 3.2.x）
+- 消息订阅： kafka （ version >= 2.12-1.1.1 建议版本 2.12-1.1.1)
+
+## 三方依赖
+
+```python
+Django==1.8.1
+MySQL-python==1.2.5
+requests==2.9.1
+lxml==3.4.4
+hiredis==0.2.0
+redis==2.10.3
+oss2==2.0.5
+selenium==3.141.0
+PyVirtualDisplay==0.1.5
+python-dateutil==2.5.0
+beautifulsoup4==4.4.1
+ConcurrentLogHandler==0.9.1
+kafka-python==1.4.6
+html5lib==1.0b8
+```
 
 # 界面预览
 
 1） 展示公众号列表
 
 ![](docs/images/topic-home.png?raw=true)
+> 订阅指定公众号
+
 
 2） 要爬取的文章关键字列表
 
-2） 要爬取的热点文章关键字列表
+![](docs/images/keys.png?raw=true)
 
-3） 已经爬取的微信文章
+> 订阅指定关键字，谨慎使用
+
+3） 要爬取的热点文章关键字列表
+
+![](docs/images/news.png?raw=true)
+> 可以直接进行热点文章链接添加
 
 4） 查看文章，并进行发布
 
-
-# 文章发布集成
-
-
+![](docs/images/publish.png?raw=true)
 
 
 # 安装
@@ -43,17 +77,17 @@ https://github.com/bowenpay/wechat-spider.git
 如果是mac osx，可以使用virtualenv，安装python2.7
 
 2）安装依赖包, clone代码
-安装Mysql-python依赖
+* 安装Mysql-python依赖
 ```
 yum install python-devel mysql-devel gcc
 ```
 
-安装lxml依赖
+* 安装lxml依赖，目前已使用容错性更好的html5lib库，此步骤可跳过
 ```
 yum install libxslt-devel libxml2-devel
 ```
 
-安装浏览器环境 selenium依赖.(如果是mac环境，仅需安装firefox， 但确保版本是 firefox 36.0，使用最新的版本会报错)
+* 安装浏览器环境 selenium依赖.(firefox升级到最新版本，60.x以上版本)
 ```
 yum install xorg-x11-server-Xvfb
 yum upgrade glib2 # 确保glib2版本大于2.42.2，否则firefox启动会报错
