@@ -49,14 +49,15 @@ class SeleniumDownloaderBackend(object):
         try:
             if self.browser:
                 self.browser.delete_all_cookies()
+                self.browser.close()
                 self.browser.quit()
         except Exception as e:
             logging.exception(e)
         # 关闭界面
         try:
             # 关闭浏览器,关闭窗口
-            #self.display and self.display.sendstop()
-            self.display and self.display.stop()
+            self.display and self.display.sendstop()
+            #self.display and self.display.stop()
         except Exception as e:
             logging.exception(e)
 

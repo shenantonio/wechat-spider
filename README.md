@@ -13,6 +13,7 @@
 * downloader.py 下载任务
 * extractor.py 渲染及html处理
 * processor.py 数据入库处理
+*
 
 1）内部通过redis进行消息驱动，进行任务流程处理，其中downloader.py和extractor.py可启动多个，加快下载和处理速度，PS：频率太高会被反爬虫封IP地址。
 2）文章发布使用kafka消息中间件，订阅者可自行订阅文章内容，详细内容将在api接口部分内说明。
@@ -87,7 +88,7 @@ yum install python-devel mysql-devel gcc
 yum install libxslt-devel libxml2-devel
 ```
 
-* 安装浏览器环境 selenium依赖.(firefox升级到最新版本，60.x以上版本)
+* 安装浏览器环境 selenium依赖.(firefox升级到最新版本，60.x以上版本,需要与geckodriver匹配)
 ```
 yum install xorg-x11-server-Xvfb
 yum upgrade glib2 # 确保glib2版本大于2.42.2，否则firefox启动会报错
@@ -99,9 +100,12 @@ clone代码,安装依赖python库
 $ git clone https://github.com/shenantonio/wechat-spider.git
 $ cd wechat-spider
 $ pip install -r requirements.txt
-如果install出现问题，建议执行：
-python -m pip install --upgrade --force pip
 
+问题说明：
+
+如果install出现问题，pip版本过低等问题，建议执行：
+python -m pip install --upgrade --force pip
+如pip已经不存在，可进行安装
 wget https://bootstrap.pypa.io/ez_setup.py
 sudo python ez_setup.py install
 
@@ -121,7 +125,7 @@ pip install pyopenssl ndg-httpsclient pyasn1
 mysql> CREATE DATABASE `wechatspider` CHARACTER SET utf8;
 ```
 
-4) 安装和运行Redis
+4) 安装和运行Redis(如已具备，可跳过)
 
 ```shell
 $ wget http://download.redis.io/releases/redis-2.8.3.tar.gz
@@ -190,6 +194,9 @@ KAFKA_CONFIG = {
 
 6) 初始化表
 ```
+# 创建日志目录,与解压后wechatspider目录同层
+
+$ mkdir logs
 $ python manage.py migrate
 
 
@@ -264,12 +271,12 @@ selenium.common.exceptions.WebDriverException: Message: 'geckodriver' executable
 
 
 geckodriver 安装
-请选用此版本：https://github.com/mozilla/geckodriver/releases/tag/v0.24.0
+请选用此版本：https://github.com/mozilla/geckodriver/releases/tag/v0.22.0
 
-https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
-tar xvfz geckodriver-v0.24.0-linux64.tar.gz
+wget https://github.com/mozilla/geckodriver/releases/download/v0.22.0/geckodriver-v0.22.0-linux64.tar.gz
+tar xvfz geckodriver-v0.22.0-linux64.tar.gz
 cp geckodriver /usr/local/bin/.
-ln -s /usr/local/geckodriver /usr/bin/geckodriver
+ln -s /usr/local/bin/geckodriver /usr/bin/geckodriver
 ```
 
 
@@ -313,7 +320,9 @@ mkdir -p /opt/app/supervisor/conf.d
 ```
 echo_supervisord_conf >/opt/app/supervisor/supervisord.conf
 
-vi /etc/supervisord.conf
+rm--vi /etc/supervisord.conf
+
+vi /opt/app/supervisor/supervisord.conf
 
 [inet_http_server] ; inet (TCP) server disabled by default
 port=0.0.0.0:9001 ; (ip_address:port specifier, *:port for all iface)
@@ -321,6 +330,7 @@ username=user ; (default is no username (open server))
 password=123 ; (default is no password (open server))
 
 [include]
+/opt/app/supervisor/conf.d
 files = ./conf.d/*.conf
 ```
 
@@ -443,6 +453,7 @@ exit 0
 ```
 cp /home/wechat/wechat-spider/supervisord.conf /opt/app/supervisor/conf.d/.
 
+调整/opt/app/supervisor/conf.d/supervisord.conf中的启动路径
 
 ```
 > 启动并观察进程
@@ -451,7 +462,7 @@ cp /home/wechat/wechat-spider/supervisord.conf /opt/app/supervisor/conf.d/.
 
 # 启动supervisord
 
-supervisord
+rm--supervisord
 
 supervisord -c /opt/app/supervisor/supervisord.conf
 
