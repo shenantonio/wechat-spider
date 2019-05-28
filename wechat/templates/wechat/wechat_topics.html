@@ -83,11 +83,11 @@
 </div>
 <script>
     var chooseAvailable = function(topic_id, choose_str){
-        $.post('/wechat/topic/'+topic_id+'/edit/', {'available': choose_str}, function(data){
-            if(data.ret==0){
-                console.log(data.msg);
-            }
-        });
+      $.post('/wechat/topic/'+topic_id+'/edit/', {'available': choose_str}, function(data,status){
+          if(status='sucess'){
+              location.reload();
+          }
+      });
     }
 </script>
 {% endblock %}

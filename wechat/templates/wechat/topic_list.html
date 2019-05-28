@@ -31,9 +31,11 @@
               <th>原文链接</th>
               <th>公众号</th>
               <th>时间</th>
+              {% comment %}
               <th>阅读数</th>
               <th>点赞数</th>
-              <th>是否可用</th>
+              {% endcomment %}
+              <th>是否发布</th>
               <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;操作&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
             </tr>
           </thead>
@@ -47,15 +49,32 @@
               <td><a target="_blank" href="{{ item.url }}"><i class="fa fa-weixin fa-lg"></i></a></td>
               <td><a target="_blank" href="{% url 'wechat.wechat_topics' wechat.id %}">{{ wechat.name}}</a></td>
               <td>{{ item.publish_time}}</td>
+              {% comment %}
               <td>{{ item.read_num }}</td>
               <td>{{ item.like_num }}</td>
-              <td>{{ item.available }}</td>
+              {% endcomment %}
               <td>
-                {% if wechat.status == 2 %}
-                  公众号已删除
+                {% ifequal item.available '已发布' %}
+                    <font color="green" >已发布</font>
                 {% else %}
-                  <a href="{% url 'wechat.wechat_delete' wechat.id %}?next={{ request.get_full_path }}">删除公众号</a>
-                {% endif %}
+                    <font color="red" >未发布</font>
+                {% endifequal %}
+              </td>
+              <td>
+                {% comment %}
+                  {% if wechat.status == 2 %}
+                    公众号已删除
+                  {% else %}
+                    <a href="{% url 'wechat.wechat_delete' wechat.id %}?next={{ request.get_full_path }}">删除公众号</a>
+                  {% endif %}
+                {% endcomment %}
+                <button type="button" id = “id_available” name="发布" onclick="chooseAvailable({{ item.id }}, '已发布')">
+                {% ifequal item.available '已发布' %}
+                    再次发布
+                {% else %}
+                    发布
+                {% endifequal %}
+                </button>
               </td>
             </tr>
             {% endwith %}
@@ -70,4 +89,13 @@
 
   </div>
 </div>
+<script>
+    var chooseAvailable = function(topic_id, choose_str){
+        $.post('/wechat/topic/'+topic_id+'/edit/', {'available': choose_str}, function(data,status){
+            if(status='sucess'){
+                location.reload();
+            }
+        });
+    }
+</script>
 {% endblock %}

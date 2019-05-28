@@ -201,7 +201,7 @@ IMAGE_SERVER_URL = 'http://localhost:8001/wechat/image/download/'
 # Apache Kafka
 KAFKA_ENABLE = True
 KAFKA_CONFIG = {
-    "bootstrap_servers": "localhost:9092",
+    "bootstrap_servers": "127.0.0.1:9092",
     "topic": "wechat_topic",
     "client_id": "wechatspider"
 }

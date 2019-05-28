@@ -4,11 +4,16 @@ from wechatspider.util import get_uniqueid
 from wechat.constants import KIND_DETAIL, KIND_KEYWORD
 from wechat.models import Wechat
 
+import logging
+logger = logging.getLogger()
+
 class DjangoModelBackend(object):
     def __init__(self, _class):
         self._class = _class
 
     def process(self, params):
+        logger.info('line:15')
+        logger.info(params)
         C = self._class
         # 排除被屏蔽的情况
         if 'mp.weixin.qq.com' not in params.get('url'):
@@ -46,4 +51,3 @@ class DjangoModelBackend(object):
             params.pop('retry', None)
             params['uniqueid'] = get_uniqueid('%s:%s' % (params['wechat_id'], params['title']))
             C.objects.update_or_create(uniqueid=params['uniqueid'], defaults=params)
-

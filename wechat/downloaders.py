@@ -132,6 +132,23 @@ class SeleniumDownloaderBackend(object):
                 self.retry_crawl(data)
                 time.sleep(randint(1, 5))
             else:
+                ##提取title和微信账号
+                js = """ return document.documentElement.innerHTML; """
+                body = browser.execute_script(js)
+                htmlparser = etree.HTMLParser()
+                tree = etree.parse(StringIO(body), htmlparser)
+                titleelems = [item.strip() for item in tree.xpath("//h2[@class='rich_media_title']/text()") if item.strip()]
+                wechatelems = [item.strip() for item in tree.xpath("//span[@class='rich_media_meta rich_media_meta_nickname']/a[@id='js_name']/text()") if item.strip()]
+                wechatidelems = [item.strip() for item in tree.xpath("//div[@id='js_profile_qrcode']/div[@class='profile_inner']/p[@class='profile_meta']/span[@class='profile_meta_value']/text()") if item.strip()]
+
+                title = titleelems[0] if len(titleelems)>0 else ''
+                wechatid = wechatidelems[0] if len(wechatidelems)>0 else ''
+                name = wechatelems[0] if len(wechatelems)>0 else ''
+
+                logger.info(title)
+                logger.info(wechatid)
+                logger.info(name)
+                logger.info('line:147')
                 js = """
                     var imgs = document.getElementsByTagName('img');
 
@@ -157,7 +174,9 @@ class SeleniumDownloaderBackend(object):
                     'url': browser.current_url,
                     'body': body,
                     'avatar': '',
-                    'title': '',
+                    'name': name,
+                    'title': title,
+                    'wechatid': wechatid,
                     'kind': KIND_DETAIL
                 })
                 time.sleep(randint(1, 5))
@@ -173,13 +192,13 @@ class SeleniumDownloaderBackend(object):
         browser.get("http://weixin.sogou.com/")
         time.sleep(3)
         # 增加Cookie信息
-        logger.info('antonio add cookie')
-        browser.add_cookie({'name': 'ABTEST', 'value': '4|1555894615|v1'})
-        browser.add_cookie({'name': 'IPLOC', 'value': 'CN3100'})
-        browser.add_cookie({'name': 'SUID', 'value': '5AE9E4744018960A000000005CBD1157'})
-        browser.add_cookie({'name': 'weixinIndexVisited', 'value': '1'})
-        browser.add_cookie({'name': 'SUV', 'value': '00A39A3B74E4E95A5CBD11597C9EF458'})
-        browser.add_cookie({'name': 'SNUID', 'value': '368589186D68EB7F9F331B386D002CE9'})
+        # logger.info('antonio add cookie')
+        # browser.add_cookie({'name': 'ABTEST', 'value': '4|1555894615|v1'})
+        # browser.add_cookie({'name': 'IPLOC', 'value': 'CN3100'})
+        # browser.add_cookie({'name': 'SUID', 'value': '5AE9E4744018960A000000005CBD1157'})
+        # browser.add_cookie({'name': 'weixinIndexVisited', 'value': '1'})
+        # browser.add_cookie({'name': 'SUV', 'value': '00A39A3B74E4E95A5CBD11597C9EF458'})
+        # browser.add_cookie({'name': 'SNUID', 'value': '368589186D68EB7F9F331B386D002CE9'})
         logger.info(browser.title)
         element_querybox = browser.find_element_by_name('query')
         element_querybox.send_keys(wechatid, Keys.ARROW_DOWN)

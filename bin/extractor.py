@@ -131,19 +131,6 @@ NORMAL_RULES = [
 
 DETAIL_RULES = [
   {
-    "key":"title",
-    "rules":[
-      {
-        "kind":"xpath",
-        "data":"//title/text()"
-      },
-      {
-        "kind":"python",
-        "data":"out_val=in_val[0] if in_val else '';"
-      }
-    ]
-  },
-  {
     "key":"origin_title",
     "rules":[
       {
@@ -243,32 +230,6 @@ DETAIL_RULES = [
     ]
   },
   {
-    "key":"wechatid",
-    "rules":[
-      {
-        "kind":"xpath",
-        "data":"//span[@class='profile_meta_value']/text()"
-      },
-      {
-        "kind":"python",
-        "data":"out_val=in_val[0] if len(in_val) == 2 else '';"
-      }
-    ]
-  },
-  {
-    "key":"name",
-    "rules":[
-      {
-        "kind":"xpath",
-        "data":"//strong[@class='profile_nickname']/text()"
-      },
-      {
-        "kind":"python",
-        "data":"out_val=in_val[0] if in_val else '';"
-      }
-    ]
-  },
-  {
     "key":"intro",
     "rules":[
       {
@@ -352,7 +313,10 @@ class Extractor(object):
                 "kind": data["kind"],
                 "url": data["url"],
                 "source": data["body"],
-                "avatar": ''
+                "title": data["title"],
+                "wechatid": data["wechatid"],
+                'name': data["name"],
+                "avatar": data["avatar"]
             }
             rules = DETAIL_RULES
         elif data.get('kind') == KIND_KEYWORD:
