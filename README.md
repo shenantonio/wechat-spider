@@ -107,7 +107,8 @@ $ pip install -r requirements.txt
 python -m pip install --upgrade --force pip
 如pip已经不存在，可进行安装
 wget https://bootstrap.pypa.io/ez_setup.py
-sudo python ez_setup.py install
+python ez_setup.py install
+easy_install pip
 
 如出现
 Collecting Django==1.8.1 (from -r requirements.txt (line 1))
@@ -194,7 +195,7 @@ KAFKA_CONFIG = {
 
 6) 初始化表
 ```
-# 创建日志目录,与解压后wechatspider目录同层
+# 创建日志目录,与解压后wechat-spider目录下
 
 $ mkdir logs
 $ python manage.py migrate
@@ -320,8 +321,6 @@ mkdir -p /opt/app/supervisor/conf.d
 ```
 echo_supervisord_conf >/opt/app/supervisor/supervisord.conf
 
-rm--vi /etc/supervisord.conf
-
 vi /opt/app/supervisor/supervisord.conf
 
 [inet_http_server] ; inet (TCP) server disabled by default
@@ -330,7 +329,6 @@ username=user ; (default is no username (open server))
 password=123 ; (default is no password (open server))
 
 [include]
-/opt/app/supervisor/conf.d
 files = ./conf.d/*.conf
 ```
 
@@ -338,6 +336,8 @@ files = ./conf.d/*.conf
 
 ```
 vi /etc/init.d/supervisord
+
+增加如下内容：
 
 #! /usr/bin/env bash
 # chkconfig: - 85 15
@@ -444,6 +444,9 @@ exit 1
 esac
 
 exit 0
+
+# 增加执行权限
+chmod a+x /etc/init.d/supervisord
 
 ```
 

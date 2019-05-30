@@ -76,8 +76,8 @@ class SeleniumDownloaderBackend(object):
         fp = webdriver.FirefoxProfile()
         #禁止加载image
         #fp.set_preference('permissions.default.stylesheet', 2)
-        fp.set_preference('permissions.default.image', 2)
-        fp.set_preference('dom.ipc.plugins.enabled.libflashplayer.so', 'false')
+        # fp.set_preference('permissions.default.image', 2)
+        # fp.set_preference('dom.ipc.plugins.enabled.libflashplayer.so', 'false')
         fp.set_preference("general.useragent.override","Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 Safari/7046A194A")
         if proxy.is_valid():
             logger.info('antonio-97[%s:%s]' % (proxy.host, proxy.port))
