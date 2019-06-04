@@ -318,6 +318,8 @@ class Extractor(object):
                 'name': data["name"],
                 "avatar": data["avatar"]
             }
+            if data.has_key("kgId") :
+                result["kgId"] = data["kgId"]
             rules = DETAIL_RULES
         elif data.get('kind') == KIND_KEYWORD:
             result = {

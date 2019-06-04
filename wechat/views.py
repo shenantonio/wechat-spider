@@ -252,6 +252,36 @@ def topic_add(request):
         messages.error(request, 'url 错误, 添加失败')
     return redirect(reverse('wechat.topic_list'))
 
+@csrf_exempt
+def topic_add_kg(request):
+    try:
+        data = json.loads(request.body)
+        kgId = data["kgId"]
+        url = data["url"]
+        plain_url = base64.decodestring(url)
+        if plain_url.startswith('http://mp.weixin.qq.com/') or plain_url.startswith('https://mp.weixin.qq.com/') :
+            data = {
+                'kind': KIND_DETAIL,
+                'url': plain_url,
+                'kgId': kgId
+                }
+            r = get_redis()
+            r.rpush(settings.CRAWLER_CONFIG["downloader"], json.dumps(data))
+            return JsonResponse({
+                    'rspcode': '0000',
+                    'rspmessage': 'ok'
+                    })
+        else:
+            return JsonResponse({
+                    'rspcode': '9999',
+                    'rspmessage': 'url不合法'
+                    })
+    except Exception as e:
+        logging.exception('出现错误')
+        return JsonResponse({
+                'rspcode': '9999',
+                'rspmessage': '系统错误'
+                })
 
 
 def search(request):

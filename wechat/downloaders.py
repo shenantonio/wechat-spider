@@ -170,7 +170,7 @@ class SeleniumDownloaderBackend(object):
                     return document.documentElement.innerHTML;
                 """
                 body = browser.execute_script(js)
-                process_topic({
+                out_data = {
                     'url': browser.current_url,
                     'body': body,
                     'avatar': '',
@@ -178,9 +178,11 @@ class SeleniumDownloaderBackend(object):
                     'title': title,
                     'wechatid': wechatid,
                     'kind': KIND_DETAIL
-                })
+                    }
+                if data.has_key("kgId") :
+                    out_data["kgId"] = data["kgId"]
+                process_topic(out_data)
                 time.sleep(randint(1, 5))
-
         except Exception as e:
             logger.exception(e)
             self.log_antispider()

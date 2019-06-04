@@ -71,6 +71,7 @@ class Downloader(object):
                         else:
                             item_data = topic
                             item_data["wechat_id"] = data["wechat_id"]
+                        logger.info("74------------")
                         r.lpush(CRAWLER_CONFIG["extractor"], json.dumps(item_data))
                         logger.debug(item_data)
 

@@ -52,7 +52,7 @@ class Processor():
                 logger.info(json.dumps(data, encoding="UTF-8", ensure_ascii=False))
                 self.process(data)
             except Exception as e:
-                print e
+                logger.exception('入库出现异常')
                 continue
 
 if __name__ == '__main__':

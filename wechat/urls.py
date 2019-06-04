@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^topic/available/$', views.topic_available_list, name="wechat.topic_available_list"),
 
     url(r'^topic/add/$', views.topic_add, name="wechat.topic_add"),
+    url(r'^topic/add_kg/$', views.topic_add_kg, name="wechat.topic_add_kg"),
     url(r'^search/$', views.search, name="wechat.search"),
 
 

@@ -47,6 +47,39 @@ def public_topic(topic_id):
     logger.info('topic[%s]发布成功' % (topic_id.encode('utf-8')))
     return
 
+def public_topic_kg(uniqueid, kg_id):
+    # 如果没有kafka消息推送，将自动忽略
+    if not settings.KAFKA_ENABLE:
+        return
+    topic_data = get_topic_bykey(uniqueid)
+    if topic_data is None:
+        logger.error('主题消息[%s]为空，不能进行分发' % (uniqueid))
+        return
+    topic_data["kgId"] = kg_id
+    producer = topic_kafka.get_producer()
+    producer.send(KAFKA_CONF["topic"], json.dumps(topic_data, cls=DateEncoder))
+    producer.flush()
+    logger.info('topic[%s]发布成功' % (uniqueid.encode('utf-8')))
+    return
+
+def get_topic_bykey(uniqueid):
+    topic = Topic.objects.get(uniqueid=uniqueid)
+    if topic is None:
+        logger.error('主题消息[%s]为空，不能进行分发' % (uniqueid))
+        return
+    #获取主题内容信息
+    topic_data = model_to_dict(topic)
+    wechat = Wechat.objects.get(id=topic.wechat_id)
+    if wechat is None:
+        logger.error('主题消息[%s],对应的公众号[%s]为空，无法分发公众号信息' % (uniqueid, topic.wechat_id))
+    else:
+        topic_data["wechat_name"] = wechat.name
+        topic_data["wechatid"] = wechat.wechatid
+
+    topic_data["source"] = base64.b64encode(topic_data["source"].encode('utf-8'))
+    topic_data["content"] = ''
+    return topic_data
+
 def get_topic(topic_id):
     topic = Topic.objects.get(id=topic_id)
     if topic is None:

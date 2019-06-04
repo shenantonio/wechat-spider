@@ -3,6 +3,7 @@ __author__ = 'yijingping'
 from wechatspider.util import get_uniqueid
 from wechat.constants import KIND_DETAIL, KIND_KEYWORD
 from wechat.models import Wechat
+from kafkaTopic import public_topic_kg
 
 import logging
 logger = logging.getLogger()
@@ -42,10 +43,13 @@ class DjangoModelBackend(object):
                 return
 
             # 保存文章
+            kg_id = params.pop('kgId')
             params['wechat_id'] = wechat.id
             params['uniqueid'] = get_uniqueid('%s:%s' % (params['wechat_id'], params['title']))
             C.objects.update_or_create(uniqueid=params['uniqueid'], defaults=params)
-
+            if not kg_id is None :
+                 logger.info("line:50")
+                 public_topic_kg(params['uniqueid'],kg_id)
         else:
             params.pop('kind', None)
             params.pop('retry', None)
