@@ -5,11 +5,16 @@ import urllib2
 import requests
 from lxml.etree import tostring
 from itertools import chain
+from django.db import connections
 
 ip_check_url = 'http://api.ipify.org'
 user_agent = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0'
 socket_timeout = 3
 
+# close old connections
+def close_old_connections():
+    for conn in connections.all():
+        conn.close_if_unusable_or_obsolete()
 
 # Get real public IP address
 def get_real_pip():

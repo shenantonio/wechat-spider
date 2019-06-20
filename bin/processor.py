@@ -19,6 +19,7 @@ from django.conf import settings
 from wechat.models import Topic
 from wechat.processors import DjangoModelBackend
 from wechatspider.util import get_redis, get_uniqueid
+from wechat.util import close_old_connections
 import logging
 logger = logging.getLogger()
 
@@ -48,6 +49,8 @@ class Processor():
                 continue
 
             try:
+                # close connection
+                close_old_connections()
                 data = json.loads(rsp[1])
                 logger.info(json.dumps(data, encoding="UTF-8", ensure_ascii=False))
                 self.process(data)

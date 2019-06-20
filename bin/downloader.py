@@ -14,6 +14,7 @@ import json
 from random import randint
 from django.conf import settings
 from wechatspider.util import get_redis
+from wechat.util import close_old_connections
 from wechat.proxies import MysqlProxyBackend
 from wechat.downloaders import SeleniumDownloaderBackend
 from wechat.constants import KIND_HISTORY, KIND_DETAIL, KIND_KEYWORD
@@ -52,6 +53,8 @@ class Downloader(object):
                 continue
 
             try:
+                # close old connection
+                close_old_connections()
                 data = json.loads(resp_data[1])
 
                 logger.debug(data)
